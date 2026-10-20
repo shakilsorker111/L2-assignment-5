@@ -16,7 +16,6 @@ import {
   AlertCircle,
   ArrowLeft,
   CheckCircle2,
-  FileText,
   ImageIcon,
   ImageOff,
   Info,
@@ -152,6 +151,13 @@ function getErrorMessage(err: unknown, fallback: string) {
   return fallback;
 }
 
+/** Accepts either `T[]` or `{ data: T[] }`, so it works with either service shape. */
+function normalizeList<T>(value: unknown): T[] {
+  if (Array.isArray(value)) return value as T[];
+  const data = (value as { data?: unknown } | null)?.data;
+  return Array.isArray(data) ? (data as T[]) : [];
+}
+
 function formatPrice(value: string) {
   const n = Number(value);
   return value.trim() !== "" && Number.isFinite(n) && n > 0
@@ -195,10 +201,10 @@ export default function AddGearForm() {
       setLoadingCategories(true);
       setCategoriesFailed(false);
 
-      const response = await getCategories();
+      const response: unknown = await getCategories();
       if (!mountedRef.current) return;
 
-      setCategories(response.data ?? []);
+      setCategories(normalizeList<Category>(response));
     } catch (err: unknown) {
       console.error("Failed to load categories:", err);
       if (!mountedRef.current) return;

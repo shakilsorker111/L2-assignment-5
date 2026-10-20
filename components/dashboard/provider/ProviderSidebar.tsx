@@ -40,7 +40,7 @@ const navigation = [
   },
   {
     label: "Profile",
-    href: "/dashboard/provider/profile",
+    href: "/dashboard/profile",
     icon: User,
   },
 ];
